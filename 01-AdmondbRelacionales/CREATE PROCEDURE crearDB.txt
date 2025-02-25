@@ -1,0 +1,48 @@
+CREATE PROCEDURE crearDB
+	@AnombreDb NVARCHAR(MAX),
+	@mdfPath NVARCHAR(MAX),
+	@primarySize NVARCHAR(MAX),
+	@primaryPercent NVARCHAR(MAX),
+	@primaryMaxSize NVARCHAR(MAX),
+	@ldfPath NVARCHAR(MAX),
+	@logSize NVARCHAR(MAX),
+	@logPercent NVARCHAR(MAX)
+AS
+BEGIN
+	DECLARE @sql NVARCHAR(MAX);
+	DECLARE @preNombreDb NVARCHAR(MAX) = @AnombreDb;
+	DECLARE @preFullNamePrimary NVARCHAR(MAX) = @AnombreDb + 'Data';
+	DECLARE @preFullMdfPath NVARCHAR(MAX) = @mdfPath + '/' + @AnombreDb + '.mdf';
+	DECLARE @prePrimarySize NVARCHAR(MAX) = @primarySize;
+	DECLARE @prePrimaryPercent NVARCHAR(MAX) = @primaryPercent + '%';
+	DECLARE @prePrimaryMaxSize NVARCHAR(MAX) = @primaryMaxSize;
+	DECLARE @preFullNameLog NVARCHAR(MAX) = @AnombreDb + 'Log';
+	DECLARE @preFullLdfPath NVARCHAR(MAX) = @ldfPath + '/' + @AnombreDb + '.ldf';
+	DECLARE @preFullLogSize NVARCHAR(MAX) = @logSize;
+	DECLARE @preFullLogPercent NVARCHAR(MAX) = @logPercent + '%';
+
+	SET @sql = 'create database @nombreDb
+	on primary
+	(
+	Name = @fullNamePrimary, 
+	filename = @fullMdfPath,
+	size = @primarySize,
+	filegrowth = @primaryPercent,
+	maxsize = @primaryMaxSize,
+	)
+	log on
+	(
+	Name = @fullNameLog, 
+	filename = @fullLdfPath,
+	size = @fullLogSize, 
+	filegrownth = @fullLogPercent,
+
+	)';
+
+	EXEC sp_executesql @sql, N'@NombreDb NVARCHAR(MAX), @fullNamePrimary NVARCHAR(MAX), @fullMdfPath NVARCHAR(MAX), @primarySize NVARCHAR(MAX), @primaryPercent NVARCHAR(MAX), @primaryMaxSize NVARCHAR(MAX), @fullNameLog NVARCHAR(MAX), @fullLdfPath NVARCHAR(MAX), @fullLogSize NVARCHAR(MAX), @preFullLogPercent NVARCHAR(MAX)',
+
+	@nombreDb = preNombreDb, @fullNamePrimary = @preFullNamePrimary, @fullMdfPath = @preFullMdfPath, @primarySize = @prePrimarySize, @primaryPercent = @prePrimaryPercent, @primaryMaxSize = @prePrimaryMaxSize, @fullNameLog = @preFullNameLog, @fullLdfPath = @preFullLdfPath, @fullLogSize = @preFullLogSize, @preFullLogPercent = @preFullLogPercent;
+	
+END
+
+
